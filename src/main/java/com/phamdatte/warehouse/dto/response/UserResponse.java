@@ -3,12 +3,13 @@ package com.phamdatte.warehouse.dto.response;
 import lombok.*;
 
 @Getter @Setter @Builder @AllArgsConstructor @NoArgsConstructor
-public class LoginResponse {
-    private String token;
-    @Builder.Default
-    private String tokenType = "Bearer";
+public class UserResponse {
     private Integer userId;
     private String username;
     private String fullName;
+    private String email;
+    private String phone;
+    private Integer roleId;
     private String roleName;
+    private Boolean isActive;
 }
