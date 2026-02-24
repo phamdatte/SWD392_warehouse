@@ -33,6 +33,7 @@ public class GoodsIssueService {
     private final InventoryTransactionRepository transactionRepository;
 
     // UC08 - Danh sách phiếu xuất
+    @Transactional(readOnly = true)
     public Page<GoodsIssueResponse> getAll(IssueStatus status,
                                             LocalDateTime from,
                                             LocalDateTime to,
@@ -41,6 +42,7 @@ public class GoodsIssueService {
     }
 
     // UC10 - Chi tiết phiếu xuất
+    @Transactional(readOnly = true)
     public GoodsIssueResponse getById(Integer id) {
         return toResponse(findOrThrow(id));
     }
@@ -150,7 +152,7 @@ public class GoodsIssueService {
     // ── Helpers ───────────────────────────────────────────────────────────────
 
     private GoodsIssue findOrThrow(Integer id) {
-        return issueRepository.findById(id)
+        return issueRepository.findByIdWithDetails(id)
                 .orElseThrow(() -> new ResourceNotFoundException("GoodsIssue not found: " + id));
     }
 

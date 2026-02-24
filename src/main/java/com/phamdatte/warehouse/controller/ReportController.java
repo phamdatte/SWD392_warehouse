@@ -30,26 +30,30 @@ public class ReportController {
     private final GoodsIssueService issueService;
     private final InventoryService inventoryService;
 
-    // UC15 - Báo cáo nhập kho theo kỳ
+    // UC15 - Báo cáo nhập kho (from/to optional — mặc định 30 ngày gần nhất)
     @GetMapping("/receipt")
     public ResponseEntity<Page<GoodsReceiptResponse>> receiptReport(
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime from,
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime to,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime from,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime to,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "100") int size) {
+        LocalDateTime effectiveFrom = from != null ? from : LocalDateTime.now().minusMonths(1);
+        LocalDateTime effectiveTo   = to   != null ? to   : LocalDateTime.now().plusDays(1);
         Pageable pageable = PageRequest.of(page, size, Sort.by("receiptDate").descending());
-        return ResponseEntity.ok(receiptService.getAll(ReceiptStatus.Approved, from, to, pageable));
+        return ResponseEntity.ok(receiptService.getAll(ReceiptStatus.Approved, effectiveFrom, effectiveTo, pageable));
     }
 
-    // UC16 - Báo cáo xuất kho theo kỳ
+    // UC16 - Báo cáo xuất kho (from/to optional)
     @GetMapping("/issue")
     public ResponseEntity<Page<GoodsIssueResponse>> issueReport(
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime from,
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime to,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime from,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime to,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "100") int size) {
+        LocalDateTime effectiveFrom = from != null ? from : LocalDateTime.now().minusMonths(1);
+        LocalDateTime effectiveTo   = to   != null ? to   : LocalDateTime.now().plusDays(1);
         Pageable pageable = PageRequest.of(page, size, Sort.by("issueDate").descending());
-        return ResponseEntity.ok(issueService.getAll(IssueStatus.Approved, from, to, pageable));
+        return ResponseEntity.ok(issueService.getAll(IssueStatus.Approved, effectiveFrom, effectiveTo, pageable));
     }
 
     // UC17 - Báo cáo tồn kho

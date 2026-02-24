@@ -11,6 +11,7 @@ public interface ProductRepository extends JpaRepository<Product, Integer> {
 
     @Query("""
         SELECT p FROM Product p
+        LEFT JOIN FETCH p.category
         WHERE p.isActive = true
           AND (:keyword IS NULL OR LOWER(p.productName) LIKE LOWER(CONCAT('%',:keyword,'%'))
                OR LOWER(p.productCode) LIKE LOWER(CONCAT('%',:keyword,'%')))

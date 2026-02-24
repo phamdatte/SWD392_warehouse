@@ -33,6 +33,7 @@ public class GoodsReceiptService {
     private final InventoryTransactionRepository transactionRepository;
 
     // UC03 - Danh sách phiếu nhập
+    @org.springframework.transaction.annotation.Transactional(readOnly = true)
     public Page<GoodsReceiptResponse> getAll(ReceiptStatus status,
                                               LocalDateTime from,
                                               LocalDateTime to,
@@ -42,6 +43,7 @@ public class GoodsReceiptService {
     }
 
     // UC05 - Chi tiết phiếu nhập
+    @org.springframework.transaction.annotation.Transactional(readOnly = true)
     public GoodsReceiptResponse getById(Integer id) {
         return toResponse(findOrThrow(id));
     }
@@ -138,7 +140,7 @@ public class GoodsReceiptService {
     // ── Helpers ───────────────────────────────────────────────────────────────
 
     private GoodsReceipt findOrThrow(Integer id) {
-        return receiptRepository.findById(id)
+        return receiptRepository.findByIdWithDetails(id)
                 .orElseThrow(() -> new ResourceNotFoundException("GoodsReceipt not found: " + id));
     }
 

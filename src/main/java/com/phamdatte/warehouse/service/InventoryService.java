@@ -2,7 +2,6 @@ package com.phamdatte.warehouse.service;
 
 import com.phamdatte.warehouse.dto.response.InventoryResponse;
 import com.phamdatte.warehouse.dto.response.TransactionResponse;
-import com.phamdatte.warehouse.entity.Product;
 import com.phamdatte.warehouse.enums.TransactionType;
 import com.phamdatte.warehouse.repository.InventoryRepository;
 import com.phamdatte.warehouse.repository.InventoryTransactionRepository;
@@ -11,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -24,6 +24,7 @@ public class InventoryService {
     private final ProductRepository productRepository;
 
     // UC13 - Tồn kho hiện tại
+    @Transactional(readOnly = true)
     public Page<InventoryResponse> getCurrentStock(String keyword, Integer categoryId, Pageable pageable) {
         return productRepository.findByFilter(keyword, categoryId, pageable)
                 .map(p -> {
@@ -45,6 +46,7 @@ public class InventoryService {
     }
 
     // UC14 - Lịch sử giao dịch
+    @Transactional(readOnly = true)
     public Page<TransactionResponse> getTransactions(Integer productId,
                                                       TransactionType type,
                                                       LocalDateTime from,
