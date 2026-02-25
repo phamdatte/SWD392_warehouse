@@ -69,4 +69,12 @@ public class GoodsReceiptController {
             @AuthenticationPrincipal UserDetails user) {
         return ResponseEntity.ok(receiptService.approve(id, user.getUsername()));
     }
+
+    // Hủy phiếu nhập (chỉ khi Pending)
+    @PutMapping("/{id}/cancel")
+    public ResponseEntity<GoodsReceiptResponse> cancel(
+            @PathVariable Integer id,
+            @AuthenticationPrincipal UserDetails user) {
+        return ResponseEntity.ok(receiptService.cancel(id, user.getUsername()));
+    }
 }

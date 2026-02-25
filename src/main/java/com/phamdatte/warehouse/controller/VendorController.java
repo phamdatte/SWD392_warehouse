@@ -35,13 +35,13 @@ public class VendorController {
     }
 
     @PostMapping
-    @PreAuthorize("hasRole('Admin')")
+    @PreAuthorize("hasAnyRole('Admin','Manager')")
     public ResponseEntity<Vendor> create(@Valid @RequestBody Vendor vendor) {
         return ResponseEntity.status(HttpStatus.CREATED).body(vendorRepository.save(vendor));
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasRole('Admin')")
+    @PreAuthorize("hasAnyRole('Admin','Manager')")
     public ResponseEntity<Vendor> update(@PathVariable Integer id,
                                           @Valid @RequestBody Vendor req) {
         Vendor v = vendorRepository.findById(id)
@@ -56,7 +56,7 @@ public class VendorController {
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole('Admin')")
+    @PreAuthorize("hasAnyRole('Admin','Manager')")
     public ResponseEntity<Void> delete(@PathVariable Integer id) {
         vendorRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Vendor not found: " + id));

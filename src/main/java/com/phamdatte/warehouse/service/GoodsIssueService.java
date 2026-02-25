@@ -26,6 +26,7 @@ import java.util.List;
 public class GoodsIssueService {
 
     private final GoodsIssueRepository issueRepository;
+    private final GoodsIssueItemRepository issueItemRepository;
     private final CustomerRepository customerRepository;
     private final ProductRepository productRepository;
     private final UserRepository userRepository;
@@ -74,7 +75,9 @@ public class GoodsIssueService {
     // UC11 - Sửa phiếu xuất (chỉ khi PENDING)
     @Transactional
     public GoodsIssueResponse update(Integer id, GoodsIssueRequest req, String username) {
-        GoodsIssue issue = findOrThrow(id);
+        // Dùng findById thường (không JOIN FETCH items) để tránh Hibernate cache conflict
+        GoodsIssue issue = issueRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("GoodsIssue not found: " + id));
 
         if (issue.getStatus() != IssueStatus.Pending) {
             throw new BusinessException("Only PENDING issues can be edited");
@@ -89,9 +92,28 @@ public class GoodsIssueService {
         }
         issue.setIssueDate(req.getIssueDate());
         issue.setNotes(req.getNotes());
+
+        // Xóa items cũ bằng JPQL rồi flush() để đảm bảo DELETE xuống DB trước khi INSERT mới
+        // (tránh vi phạm UNIQUE constraint (issue_id, product_id))
+        issueItemRepository.deleteByIssueIssueId(id);
+        issueItemRepository.flush();
+
         issue.getItems().clear();
         addItems(issue, req.getItems());
 
+        return toResponse(issueRepository.save(issue));
+    }
+
+    // Hủy phiếu xuất (chỉ khi PENDING)
+    @Transactional
+    public GoodsIssueResponse cancel(Integer id, String username) {
+        GoodsIssue issue = findOrThrow(id);
+
+        if (issue.getStatus() != IssueStatus.Pending) {
+            throw new BusinessException("Only PENDING issues can be cancelled");
+        }
+
+        issue.setStatus(IssueStatus.Cancelled);
         return toResponse(issueRepository.save(issue));
     }
 

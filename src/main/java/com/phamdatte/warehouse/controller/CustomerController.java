@@ -35,13 +35,13 @@ public class CustomerController {
     }
 
     @PostMapping
-    @PreAuthorize("hasRole('Admin')")
+    @PreAuthorize("hasAnyRole('Admin','Manager')")
     public ResponseEntity<Customer> create(@Valid @RequestBody Customer customer) {
         return ResponseEntity.status(HttpStatus.CREATED).body(customerRepository.save(customer));
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasRole('Admin')")
+    @PreAuthorize("hasAnyRole('Admin','Manager')")
     public ResponseEntity<Customer> update(@PathVariable Integer id,
                                             @Valid @RequestBody Customer req) {
         Customer c = customerRepository.findById(id)
@@ -56,7 +56,7 @@ public class CustomerController {
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole('Admin')")
+    @PreAuthorize("hasAnyRole('Admin','Manager')")
     public ResponseEntity<Void> delete(@PathVariable Integer id) {
         customerRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Customer not found: " + id));

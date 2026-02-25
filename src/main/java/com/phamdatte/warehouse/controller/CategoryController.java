@@ -34,13 +34,13 @@ public class CategoryController {
     }
 
     @PostMapping
-    @PreAuthorize("hasRole('Admin')")
+    @PreAuthorize("hasAnyRole('Admin','Manager')")
     public ResponseEntity<ProductCategory> create(@Valid @RequestBody ProductCategory category) {
         return ResponseEntity.status(HttpStatus.CREATED).body(categoryRepository.save(category));
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasRole('Admin')")
+    @PreAuthorize("hasAnyRole('Admin','Manager')")
     public ResponseEntity<ProductCategory> update(@PathVariable Integer id,
                                                    @Valid @RequestBody ProductCategory req) {
         ProductCategory cat = categoryRepository.findById(id)
@@ -52,7 +52,7 @@ public class CategoryController {
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole('Admin')")
+    @PreAuthorize("hasAnyRole('Admin','Manager')")
     public ResponseEntity<Void> delete(@PathVariable Integer id) {
         categoryRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Category not found: " + id));

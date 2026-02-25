@@ -26,6 +26,7 @@ import java.util.List;
 public class GoodsReceiptService {
 
     private final GoodsReceiptRepository receiptRepository;
+    private final GoodsReceiptItemRepository receiptItemRepository;
     private final VendorRepository vendorRepository;
     private final ProductRepository productRepository;
     private final UserRepository userRepository;
@@ -72,7 +73,9 @@ public class GoodsReceiptService {
     // UC06 - Sửa phiếu nhập (chỉ khi PENDING)
     @Transactional
     public GoodsReceiptResponse update(Integer id, GoodsReceiptRequest req, String username) {
-        GoodsReceipt receipt = findOrThrow(id);
+        // Dùng findById thường (không JOIN FETCH items) để tránh Hibernate cache conflict
+        GoodsReceipt receipt = receiptRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("GoodsReceipt not found: " + id));
 
         if (receipt.getStatus() != ReceiptStatus.Pending) {
             throw new BusinessException("Only PENDING receipts can be edited");
@@ -84,9 +87,28 @@ public class GoodsReceiptService {
         receipt.setVendor(vendor);
         receipt.setReceiptDate(req.getReceiptDate());
         receipt.setNotes(req.getNotes());
+
+        // Xóa items cũ bằng JPQL rồi flush() để đảm bảo DELETE xuống DB trước khi INSERT mới
+        // (tránh vi phạm UNIQUE constraint (receipt_id, product_id))
+        receiptItemRepository.deleteByReceiptReceiptId(id);
+        receiptItemRepository.flush();
+
         receipt.getItems().clear();
         addItems(receipt, req.getItems());
 
+        return toResponse(receiptRepository.save(receipt));
+    }
+
+    // Hủy phiếu nhập (chỉ khi PENDING)
+    @Transactional
+    public GoodsReceiptResponse cancel(Integer id, String username) {
+        GoodsReceipt receipt = findOrThrow(id);
+
+        if (receipt.getStatus() != ReceiptStatus.Pending) {
+            throw new BusinessException("Only PENDING receipts can be cancelled");
+        }
+
+        receipt.setStatus(ReceiptStatus.Cancelled);
         return toResponse(receiptRepository.save(receipt));
     }
 

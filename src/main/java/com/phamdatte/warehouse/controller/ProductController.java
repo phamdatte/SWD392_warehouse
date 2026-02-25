@@ -42,7 +42,7 @@ public class ProductController {
     }
 
     @PostMapping
-    @PreAuthorize("hasRole('Admin')")
+    @PreAuthorize("hasAnyRole('Admin','Manager')")
     public ResponseEntity<Product> create(@RequestBody ProductRequest req) {
         if (req.getProductCode() != null && productRepository.existsByProductCode(req.getProductCode())) {
             throw new BusinessException("Product code already exists");
@@ -52,7 +52,7 @@ public class ProductController {
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasRole('Admin')")
+    @PreAuthorize("hasAnyRole('Admin','Manager')")
     public ResponseEntity<Product> update(@PathVariable Integer id, @RequestBody ProductRequest req) {
         Product p = productRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Product not found: " + id));
@@ -61,7 +61,7 @@ public class ProductController {
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole('Admin')")
+    @PreAuthorize("hasAnyRole('Admin','Manager')")
     public ResponseEntity<Void> delete(@PathVariable Integer id) {
         productRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Product not found: " + id));

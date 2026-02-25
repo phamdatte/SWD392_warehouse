@@ -68,4 +68,12 @@ public class GoodsIssueController {
             @AuthenticationPrincipal UserDetails user) {
         return ResponseEntity.ok(issueService.approve(id, user.getUsername()));
     }
+
+    // Hủy phiếu xuất (chỉ khi Pending)
+    @PutMapping("/{id}/cancel")
+    public ResponseEntity<GoodsIssueResponse> cancel(
+            @PathVariable Integer id,
+            @AuthenticationPrincipal UserDetails user) {
+        return ResponseEntity.ok(issueService.cancel(id, user.getUsername()));
+    }
 }
