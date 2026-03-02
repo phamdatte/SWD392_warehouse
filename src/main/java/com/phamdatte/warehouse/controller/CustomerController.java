@@ -63,4 +63,14 @@ public class CustomerController {
         customerRepository.deleteById(id);
         return ResponseEntity.noContent().build();
     }
+
+    @PatchMapping("/{id}/toggle-active")
+    @PreAuthorize("hasAnyRole('Admin','Manager')")
+    public ResponseEntity<Void> toggleActive(@PathVariable Integer id) {
+        Customer c = customerRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Customer not found: " + id));
+        c.setIsActive(!Boolean.TRUE.equals(c.getIsActive()));
+        customerRepository.save(c);
+        return ResponseEntity.noContent().build();
+    }
 }

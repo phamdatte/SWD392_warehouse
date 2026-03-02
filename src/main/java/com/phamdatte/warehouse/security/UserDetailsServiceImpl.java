@@ -20,14 +20,11 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found: " + username));
 
-        if (!user.getIsActive()) {
-            throw new UsernameNotFoundException("User is inactive: " + username);
-        }
-
         return org.springframework.security.core.userdetails.User.builder()
                 .username(user.getUsername())
                 .password(user.getPasswordHash())
                 .authorities(List.of(new SimpleGrantedAuthority("ROLE_" + user.getRole().getRoleName())))
+                .disabled(!user.getIsActive())
                 .build();
     }
 }

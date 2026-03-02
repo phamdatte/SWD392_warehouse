@@ -9,6 +9,7 @@ import com.phamdatte.warehouse.repository.UserRepository;
 import com.phamdatte.warehouse.security.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
@@ -25,21 +26,25 @@ public class AuthService {
     private final RolePageRepository rolePageRepository;
 
     public LoginResponse login(LoginRequest request) {
-        Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword())
-        );
+        try {
+            Authentication authentication = authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword())
+            );
 
-        String token = jwtTokenProvider.generateToken(authentication.getName());
+            String token = jwtTokenProvider.generateToken(authentication.getName());
 
-        User user = userRepository.findByUsername(request.getUsername()).orElseThrow();
+            User user = userRepository.findByUsername(request.getUsername()).orElseThrow();
 
-        return LoginResponse.builder()
-                .token(token)
-                .userId(user.getUserId())
-                .username(user.getUsername())
-                .fullName(user.getFullName())
-                .roleName(user.getRole().getRoleName())
-                .build();
+            return LoginResponse.builder()
+                    .token(token)
+                    .userId(user.getUserId())
+                    .username(user.getUsername())
+                    .fullName(user.getFullName())
+                    .roleName(user.getRole().getRoleName())
+                    .build();
+        } catch (DisabledException e) {
+            throw new com.phamdatte.warehouse.exception.BusinessException("This account has been locked. Please contact the administrator.");
+        }
     }
 
     public List<UserPageResponse> getUserPages(String username) {

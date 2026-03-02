@@ -63,4 +63,14 @@ public class VendorController {
         vendorRepository.deleteById(id);
         return ResponseEntity.noContent().build();
     }
+
+    @PatchMapping("/{id}/toggle-active")
+    @PreAuthorize("hasAnyRole('Admin','Manager')")
+    public ResponseEntity<Void> toggleActive(@PathVariable Integer id) {
+        Vendor v = vendorRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Vendor not found: " + id));
+        v.setIsActive(!Boolean.TRUE.equals(v.getIsActive()));
+        vendorRepository.save(v);
+        return ResponseEntity.noContent().build();
+    }
 }

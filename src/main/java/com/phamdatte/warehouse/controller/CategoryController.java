@@ -59,4 +59,14 @@ public class CategoryController {
         categoryRepository.deleteById(id);
         return ResponseEntity.noContent().build();
     }
+
+    @PatchMapping("/{id}/toggle-active")
+    @PreAuthorize("hasAnyRole('Admin','Manager')")
+    public ResponseEntity<Void> toggleActive(@PathVariable Integer id) {
+        ProductCategory cat = categoryRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Category not found: " + id));
+        cat.setIsActive(!Boolean.TRUE.equals(cat.getIsActive()));
+        categoryRepository.save(cat);
+        return ResponseEntity.noContent().build();
+    }
 }

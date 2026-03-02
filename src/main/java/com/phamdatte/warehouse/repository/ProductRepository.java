@@ -12,10 +12,9 @@ public interface ProductRepository extends JpaRepository<Product, Integer> {
     @Query("""
         SELECT p FROM Product p
         LEFT JOIN FETCH p.category
-        WHERE p.isActive = true
-          AND (:keyword IS NULL OR LOWER(p.productName) LIKE LOWER(CONCAT('%',:keyword,'%'))
+        WHERE (:keyword IS NULL OR LOWER(p.productName) LIKE LOWER(CONCAT('%',:keyword,'%'))
                OR LOWER(p.productCode) LIKE LOWER(CONCAT('%',:keyword,'%')))
-          AND (:categoryId IS NULL OR p.category.categoryId = :categoryId)
+          AND (:categoryId IS NULL OR (p.category IS NOT NULL AND p.category.categoryId = :categoryId))
     """)
     Page<Product> findByFilter(
             @Param("keyword") String keyword,

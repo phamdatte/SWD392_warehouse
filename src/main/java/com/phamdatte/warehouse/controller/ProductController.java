@@ -69,6 +69,16 @@ public class ProductController {
         return ResponseEntity.noContent().build();
     }
 
+    @PatchMapping("/{id}/toggle-active")
+    @PreAuthorize("hasAnyRole('Admin','Manager')")
+    public ResponseEntity<Void> toggleActive(@PathVariable Integer id) {
+        Product p = productRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Product not found: " + id));
+        p.setIsActive(!Boolean.TRUE.equals(p.getIsActive()));
+        productRepository.save(p);
+        return ResponseEntity.noContent().build();
+    }
+
     private Product buildProduct(Product p, ProductRequest req) {
         p.setProductName(req.getProductName());
         p.setProductCode(req.getProductCode());

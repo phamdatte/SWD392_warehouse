@@ -12,4 +12,9 @@ public interface RolePageRepository extends JpaRepository<RolePage, RolePageId> 
 
     @Query("SELECT rp FROM RolePage rp JOIN FETCH rp.page p WHERE rp.role.roleId = :roleId AND rp.canView = true AND p.isActive = true ORDER BY p.displayOrder")
     List<RolePage> findByRoleIdAndCanViewTrue(@Param("roleId") Integer roleId);
+
+    List<RolePage> findAllByRoleRoleId(Integer roleId);
+
+    void deleteAllByRoleRoleId(Integer roleId);
 }
+
