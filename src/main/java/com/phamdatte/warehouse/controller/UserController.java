@@ -1,6 +1,7 @@
 package com.phamdatte.warehouse.controller;
 
 import com.phamdatte.warehouse.dto.request.CreateUserRequest;
+import com.phamdatte.warehouse.dto.request.UpdateUserRequest;
 import com.phamdatte.warehouse.dto.response.UserResponse;
 import com.phamdatte.warehouse.service.UserService;
 import jakarta.validation.Valid;
@@ -37,6 +38,13 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.CREATED).body(userService.createUser(req));
     }
 
+    // Update user info (fullName, email, phone, optional password)
+    @PutMapping("/{id}")
+    public ResponseEntity<UserResponse> updateUser(@PathVariable Integer id,
+                                                   @Valid @RequestBody UpdateUserRequest req) {
+        return ResponseEntity.ok(userService.updateUser(id, req));
+    }
+
     // UC23 - Toggle active / deactivate user
     @PatchMapping("/{id}/toggle-active")
     public ResponseEntity<UserResponse> toggleActive(@PathVariable Integer id) {
@@ -50,3 +58,4 @@ public class UserController {
         return ResponseEntity.ok(userService.changeRole(id, body.get("roleId")));
     }
 }
+

@@ -1,6 +1,7 @@
 package com.phamdatte.warehouse.service;
 
 import com.phamdatte.warehouse.dto.request.CreateUserRequest;
+import com.phamdatte.warehouse.dto.request.UpdateUserRequest;
 import com.phamdatte.warehouse.dto.response.UserResponse;
 import com.phamdatte.warehouse.entity.Role;
 import com.phamdatte.warehouse.entity.User;
@@ -13,6 +14,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 @Service
 @RequiredArgsConstructor
@@ -63,6 +65,19 @@ public class UserService {
         Role role = roleRepository.findById(roleId)
                 .orElseThrow(() -> new ResourceNotFoundException("Role not found: " + roleId));
         user.setRole(role);
+        return toResponse(userRepository.save(user));
+    }
+
+    // Update user info (fullName, email, phone, optional password reset)
+    public UserResponse updateUser(Integer userId, UpdateUserRequest req) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found: " + userId));
+        user.setFullName(req.getFullName());
+        user.setEmail(req.getEmail());
+        user.setPhone(req.getPhone());
+        if (StringUtils.hasText(req.getPassword())) {
+            user.setPasswordHash(passwordEncoder.encode(req.getPassword()));
+        }
         return toResponse(userRepository.save(user));
     }
 
