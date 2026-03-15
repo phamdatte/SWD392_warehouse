@@ -471,9 +471,9 @@ INSERT INTO role_page (role_id, page_id, can_view, can_create, can_edit, can_del
 
 -- Users mặc định (password: 123456 — đổi trước khi demo!)
 INSERT INTO user (username, password_hash, full_name, role_id, email) VALUES
-                                                                          ('admin',   '$2a$10$N9qo8uLOickgx2ZMRZoMy.Mrq4p8WY9y/FMxFZJ.g8RmlFCCHIB.a', 'Administrator',     1, 'admin@warehouse.com'),
-                                                                          ('manager', '$2a$10$N9qo8uLOickgx2ZMRZoMy.Mrq4p8WY9y/FMxFZJ.g8RmlFCCHIB.a', 'Warehouse Manager',  2, 'manager@warehouse.com'),
-                                                                          ('staff',   '$2a$10$N9qo8uLOickgx2ZMRZoMy.Mrq4p8WY9y/FMxFZJ.g8RmlFCCHIB.a', 'Warehouse Staff',    3, 'staff@warehouse.com');
+                                                                          ('admin',   '$2a$12$tmJ0DtqvtGSv.TSRh1FpKu8JpTYR7iKOI5wS.o0hlw14oyDtR1mgq', 'Administrator',     1, 'admin@warehouse.com'),
+                                                                          ('manager', '$2a$12$tmJ0DtqvtGSv.TSRh1FpKu8JpTYR7iKOI5wS.o0hlw14oyDtR1mgq', 'Warehouse Manager',  2, 'manager@warehouse.com'),
+                                                                          ('staff',   '$2a$12$tmJ0DtqvtGSv.TSRh1FpKu8JpTYR7iKOI5wS.o0hlw14oyDtR1mgq', 'Warehouse Staff',    3, 'staff@warehouse.com');
 
 INSERT INTO product_category (category_name, description) VALUES
                                                               ('Electronics',     'Thiết bị điện tử'),
