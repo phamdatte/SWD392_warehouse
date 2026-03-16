@@ -26,6 +26,9 @@ public interface ProductRepository extends JpaRepository<Product, Integer> {
     @Query("SELECT MAX(p.productCode) FROM Product p WHERE p.productCode LIKE 'P%'")
     String findMaxProductCode();
 
+    @Query("SELECT p FROM Product p LEFT JOIN FETCH p.category WHERE p.productId = :id")
+    java.util.Optional<Product> findByIdWithCategory(@Param("id") Integer id);
+
     boolean existsByProductCode(String productCode);
     boolean existsByBarcode(String barcode);
 }

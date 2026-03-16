@@ -61,7 +61,8 @@ public class ProductController {
             throw new BusinessException("Product code already exists");
         }
         Product p = buildProduct(new Product(), req);
-        return ResponseEntity.status(HttpStatus.CREATED).body(productRepository.save(p));
+        p = productRepository.save(p);
+        return ResponseEntity.status(HttpStatus.CREATED).body(productRepository.findByIdWithCategory(p.getProductId()).orElse(p));
     }
 
     @PutMapping("/{id}")
@@ -70,7 +71,8 @@ public class ProductController {
         Product p = productRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Product not found: " + id));
         buildProduct(p, req);
-        return ResponseEntity.ok(productRepository.save(p));
+        p = productRepository.save(p);
+        return ResponseEntity.ok(productRepository.findByIdWithCategory(p.getProductId()).orElse(p));
     }
 
     @DeleteMapping("/{id}")
