@@ -45,7 +45,19 @@ public class ProductController {
     @PostMapping
     @PreAuthorize("hasAnyRole('Admin','Manager')")
     public ResponseEntity<Product> create(@RequestBody ProductRequest req) {
-        if (req.getProductCode() != null && productRepository.existsByProductCode(req.getProductCode())) {
+        if (req.getProductCode() == null || req.getProductCode().trim().isEmpty()) {
+            String maxCode = productRepository.findMaxProductCode();
+            if (maxCode == null) {
+                req.setProductCode("P001");
+            } else {
+                try {
+                    int nextNum = Integer.parseInt(maxCode.substring(1)) + 1;
+                    req.setProductCode(String.format("P%03d", nextNum));
+                } catch (Exception e) {
+                    req.setProductCode("P" + System.currentTimeMillis());
+                }
+            }
+        } else if (productRepository.existsByProductCode(req.getProductCode())) {
             throw new BusinessException("Product code already exists");
         }
         Product p = buildProduct(new Product(), req);

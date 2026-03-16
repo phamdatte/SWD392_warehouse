@@ -23,6 +23,9 @@ public interface ProductRepository extends JpaRepository<Product, Integer> {
             @Param("activeOnly") Boolean activeOnly,
             Pageable pageable);
 
+    @Query("SELECT MAX(p.productCode) FROM Product p WHERE p.productCode LIKE 'P%'")
+    String findMaxProductCode();
+
     boolean existsByProductCode(String productCode);
     boolean existsByBarcode(String barcode);
 }
