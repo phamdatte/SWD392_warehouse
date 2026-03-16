@@ -9,7 +9,7 @@ import org.springframework.data.repository.query.Param;
 
 public interface VendorRepository extends JpaRepository<Vendor, Integer> {
 
-    @Query("SELECT v FROM Vendor v WHERE (:keyword IS NULL OR LOWER(v.vendorName) LIKE LOWER(CONCAT('%',:keyword,'%'))) AND v.isActive = true")
+    @Query("SELECT v FROM Vendor v WHERE (:keyword IS NULL OR LOWER(v.vendorName) LIKE LOWER(CONCAT('%',:keyword,'%')))")
     Page<Vendor> findActiveByKeyword(@Param("keyword") String keyword, Pageable pageable);
 
     boolean existsByVendorCode(String vendorCode);
