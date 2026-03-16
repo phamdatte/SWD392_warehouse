@@ -8,17 +8,27 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 public interface InventoryTransactionRepository extends JpaRepository<InventoryTransaction, Integer> {
 
-    @Query("""
+    @Query(value = """
         SELECT t FROM InventoryTransaction t
-        WHERE (:productId IS NULL OR t.product.productId = :productId)
+        LEFT JOIN FETCH t.product p
+        LEFT JOIN FETCH t.performedBy
+        WHERE (:productId IS NULL OR p.productId = :productId)
           AND (:type IS NULL OR t.transactionType = :type)
           AND (:from IS NULL OR t.transactionDate >= :from)
           AND (:to IS NULL OR t.transactionDate <= :to)
         ORDER BY t.transactionDate DESC
+    """,
+    countQuery = """
+        SELECT COUNT(t) FROM InventoryTransaction t
+        WHERE (:productId IS NULL OR t.product.productId = :productId)
+          AND (:type IS NULL OR t.transactionType = :type)
+          AND (:from IS NULL OR t.transactionDate >= :from)
+          AND (:to IS NULL OR t.transactionDate <= :to)
     """)
     Page<InventoryTransaction> findByFilter(
             @Param("productId") Integer productId,
@@ -26,4 +36,15 @@ public interface InventoryTransactionRepository extends JpaRepository<InventoryT
             @Param("from") LocalDateTime from,
             @Param("to") LocalDateTime to,
             Pageable pageable);
+
+    @Query("""
+        SELECT COALESCE(SUM(t.quantity), 0)
+        FROM InventoryTransaction t
+        WHERE t.product.productId = :productId
+          AND t.transactionType = :type
+    """)
+    BigDecimal sumByProductAndType(
+            @Param("productId") Integer productId,
+            @Param("type") TransactionType type);
 }
+

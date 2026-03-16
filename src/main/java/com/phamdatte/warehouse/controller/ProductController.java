@@ -31,8 +31,9 @@ public class ProductController {
     public ResponseEntity<Page<Product>> getAll(
             @RequestParam(required = false) String keyword,
             @RequestParam(required = false) Integer categoryId,
+            @RequestParam(required = false) Boolean activeOnly,
             @PageableDefault(size = 20, sort = "productCode", direction = Sort.Direction.ASC) Pageable pageable) {
-        return ResponseEntity.ok(productRepository.findByFilter(keyword, categoryId, pageable));
+        return ResponseEntity.ok(productRepository.findByFilter(keyword, categoryId, activeOnly, pageable));
     }
 
     @GetMapping("/{id}")

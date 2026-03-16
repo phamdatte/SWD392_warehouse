@@ -15,5 +15,7 @@ public class InventoryResponse {
     private BigDecimal unitPrice;
     private BigDecimal currentQuantity;
     private BigDecimal inventoryValue;
+    private BigDecimal totalReceipt;
+    private BigDecimal totalIssue;
     private LocalDateTime lastUpdated;
 }

@@ -15,10 +15,12 @@ public interface ProductRepository extends JpaRepository<Product, Integer> {
         WHERE (:keyword IS NULL OR LOWER(p.productName) LIKE LOWER(CONCAT('%',:keyword,'%'))
                OR LOWER(p.productCode) LIKE LOWER(CONCAT('%',:keyword,'%')))
           AND (:categoryId IS NULL OR (p.category IS NOT NULL AND p.category.categoryId = :categoryId))
+          AND (:activeOnly IS NULL OR :activeOnly = false OR p.isActive = true)
     """)
     Page<Product> findByFilter(
             @Param("keyword") String keyword,
             @Param("categoryId") Integer categoryId,
+            @Param("activeOnly") Boolean activeOnly,
             Pageable pageable);
 
     boolean existsByProductCode(String productCode);

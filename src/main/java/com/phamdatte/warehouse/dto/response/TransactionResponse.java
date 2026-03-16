@@ -12,12 +12,16 @@ public class TransactionResponse {
     private Integer productId;
     private String productCode;
     private String productName;
+    private String unit;
     private TransactionType transactionType;
     private BigDecimal quantity;
     private BigDecimal quantityBefore;
     private BigDecimal quantityAfter;
+    private BigDecimal unitPrice;
+    private BigDecimal totalAmount;
     private Integer referenceId;
     private ReferenceType referenceType;
+    private String referenceNumber;   // e.g. RC20260101-0001
     private String notes;
     private String performedBy;
     private LocalDateTime transactionDate;
